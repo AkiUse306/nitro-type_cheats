@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nitro Type Cheats Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: calc(100vh - 40px);
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .category-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: #f5f5f5;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover {
+            background: #e8e8ff;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 250px;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .cheats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            flex: 1;
+        }
+
+        .cheat-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cheat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .cheat-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .cheat-description {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .cheat-meta {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .risk-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .risk-none {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .risk-low {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .risk-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .risk-very-high {
+            background: #f5c6cb;
+            color: #721c24;
+        }
+
+        .risk-extreme {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .power-rating {
+            color: #ffc107;
+            font-size: 14px;
+        }
+
+        .cheat-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-copy {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .btn-view {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-view:hover {
+            background: #e0e0e0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #e0e0e0;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            margin: 20px 0;
+        }
+
+        .copy-btn-large {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .copy-btn-large:hover {
+            background: #5568d3;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 50px 20px;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .cheats-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .cheats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Categories</h2>
+            <button class="category-btn active" onclick="filterCategory('all')">📋 All Cheats (37)</button>
+            <button class="category-btn" onclick="filterCategory('core')">⚡ Core (7)</button>
+            <button class="category-btn" onclick="filterCategory('racing')">🏎️ Racing (6)</button>
+            <button class="category-btn" onclick="filterCategory('progression')">📈 Progression (5)</button>
+            <button class="category-btn" onclick="filterCategory('resources')">💎 Resources (5)</button>
+            <button class="category-btn" onclick="filterCategory('bonuses')">🎁 Bonuses (4)</button>
+            <button class="category-btn" onclick="filterCategory('utility')">🛠️ Utility (6)</button>
+            <button class="category-btn" onclick="filterCategory('achievement')">🏆 Achievement (2)</button>
+            <button class="category-btn" onclick="filterCategory('super')">⚠️ Super (2)</button>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Nitro Type Cheats Panel</h1>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search cheats..." onkeyup="searchCheats()">
+                </div>
+            </div>
+
+            <div class="cheats-grid" id="cheatsContainer"></div>
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <h2>No cheats found</h2>
+                <p>Try adjusting your search or filter</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="codeModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <h2 id="modalTitle"></h2>
+            <div class="code-block" id="codeBlock"></div>
+            <button class="copy-btn-large" onclick="copyFromModal()">📋 Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        // Cheat database
+        const cheats = {
+            core: [
+                { name: 'Auto Typer', file: 'auto-typer', desc: 'Automatically types all words at high speed' },
+                { name: 'Money Adder', file: 'money-adder', desc: 'Add unlimited coins (999,999,999)' },
+                { name: 'XP Booster', file: 'xp-booster', desc: 'Gain 10x XP from each race' },
+                { name: 'Speed Multiplier', file: 'speed-multiplier', desc: 'Increase typing speed (3x)' },
+                { name: 'Perfect Typing', file: 'perfect-typing', desc: 'Eliminate typing errors & achieve 100% accuracy' },
+                { name: 'Premium Unlock', file: 'premium-unlock', desc: 'Unlock all premium features and cars' },
+                { name: 'Disable Ads', file: 'disable-ads', desc: 'Remove all advertisements' }
+            ],
+            achievement: [
+                { name: 'Achievement Unlocker', file: 'achievement-unlocker', desc: 'Unlock all achievements and badges' },
+                { name: 'Level Booster', file: 'level-booster', desc: 'Instantly reach level 999' }
+            ],
+            racing: [
+                { name: 'Race Dominator', file: 'race-dominator', desc: 'Always finish first in every race' },
+                { name: 'Typing Test Passer', file: 'typing-test-passer', desc: 'Automatically pass tests with perfect scores' },
+                { name: 'Competition Dominator', file: 'competition-dominator', desc: 'Rank #1 in competition' },
+                { name: 'Friend Rival Beater', file: 'friend-rival-beater', desc: 'Beat all friend rivals (9999 wins)' },
+                { name: 'School Leaderboard Dominator', file: 'school-leaderboard-dominator', desc: 'Rank #1 in school' },
+                { name: 'Duo Match Dominator', file: 'duo-match-dominator', desc: 'Win all duo matches' }
+            ],
+            progression: [
+                { name: 'Season Pass Completer', file: 'season-pass-completer', desc: 'Tier 100 season pass' },
+                { name: 'Cup Challenge Beater', file: 'cup-challenge-beater', desc: 'Beat all cup challenges' },
+                { name: 'Class Challenge Completer', file: 'class-challenge-completer', desc: 'Complete all class challenges' },
+                { name: 'Prestige Multiplier', file: 'prestige-multiplier', desc: '100x prestige gains' },
+                { name: 'Refund Generator', file: 'refund-generator', desc: 'Unlimited refund credits' }
+            ],
+            resources: [
+                { name: 'Energy Restorer', file: 'energy-restorer', desc: 'Unlimited energy/stamina' },
+                { name: 'Daily Bonus Multiplier', file: 'daily-bonus-multiplier', desc: '10x daily rewards' },
+                { name: 'Streak Extender', file: 'streak-extender', desc: 'Maintain 9999-race streak' },
+                { name: 'Car Parts Generator', file: 'car-parts-generator', desc: 'Unlimited car upgrade parts' },
+                { name: 'Powerup Spam', file: 'powerup-spam', desc: 'Get 9999 of every power-up' }
+            ],
+            bonuses: [
+                { name: 'Login Bonus Claimer', file: 'login-bonus-claimer', desc: '365-day login streak + all bonuses' },
+                { name: 'Birthday Bonus Multiplier', file: 'birthday-bonus-multiplier', desc: 'Birthday bonus (10x) anytime' },
+                { name: 'Weekend Multiplier', file: 'weekend-multiplier', desc: 'Weekend bonus (5x) anytime' },
+                { name: 'Time Freeze', file: 'time-freeze', desc: 'Freeze time during races' }
+            ],
+            utility: [
+                { name: 'Night Mode Injector', file: 'night-mode-injector', desc: 'Dark mode everywhere' },
+                { name: 'Sound Disabler', file: 'sound-disabler', desc: 'Mute all sounds' },
+                { name: 'Performance Booster', file: 'performance-booster', desc: 'Optimize FPS & speed' },
+                { name: 'Profile Customizer', file: 'profile-customizer', desc: 'Premium profile cosmetics' },
+                { name: 'Cache Cleaner', file: 'cache-cleaner', desc: 'Optimize storage' },
+                { name: 'Data Exporter', file: 'data-exporter', desc: 'Backup game data as JSON' }
+            ],
+            super: [
+                { name: 'Combined Cheat', file: 'combined-cheat', desc: 'All cheats in one (⚠️ High ban risk)' },
+                { name: 'Ultimate Cheat', file: 'ultimate-cheat', desc: 'EVERYTHING maxed out (⚠️ Extreme ban risk)' }
+            ]
+        };
+
+        const riskLevels = {
+            'Auto Typer': 'high',
+            'Money Adder': 'high',
+            'XP Booster': 'medium',
+            'Speed Multiplier': 'medium',
+            'Perfect Typing': 'high',
+            'Premium Unlock': 'high',
+            'Disable Ads': 'low',
+            'Achievement Unlocker': 'medium',
+            'Level Booster': 'high',
+            'Race Dominator': 'very-high',
+            'Typing Test Passer': 'high',
+            'Competition Dominator': 'very-high',
+            'Friend Rival Beater': 'high',
+            'School Leaderboard Dominator': 'high',
+            'Duo Match Dominator': 'high',
+            'Energy Restorer': 'medium',
+            'Daily Bonus Multiplier': 'medium',
+            'Streak Extender': 'medium',
+            'Car Parts Generator': 'medium',
+            'Powerup Spam': 'medium',
+            'Season Pass Completer': 'high',
+            'Cup Challenge Beater': 'high',
+            'Class Challenge Completer': 'medium',
+            'Prestige Multiplier': 'medium',
+            'Refund Generator': 'high',
+            'Login Bonus Claimer': 'low',
+            'Birthday Bonus Multiplier': 'low',
+            'Weekend Multiplier': 'low',
+            'Time Freeze': 'very-high',
+            'Night Mode Injector': 'none',
+            'Sound Disabler': 'none',
+            'Performance Booster': 'none',
+            'Profile Customizer': 'low',
+            'Cache Cleaner': 'none',
+            'Data Exporter': 'none',
+            'Combined Cheat': 'very-high',
+            'Ultimate Cheat': 'extreme'
+        };
+
+        let currentCategory = 'all';
+        let currentCode = '';
+
+        function getRiskBadgeClass(risk) {
+            return `risk-${risk}`;
+        }
+
+        function getRiskLabel(risk) {
+            const labels = {
+                'none': '✓ Safe',
+                'low': '⚠️ Low Risk',
+                'medium': '⚠️ Medium',
+                'high': '⚠️ High',
+                'very-high': '🔴 Very High',
+                'extreme': '🚨 Extreme'
+            };
+            return labels[risk] || risk;
+        }
+
+        function filterCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderCheats();
+        }
+
+        function searchCheats() {
+            renderCheats();
+        }
+
+        function renderCheats() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let allCheats = [];
+
+            if (currentCategory === 'all') {
+                Object.values(cheats).forEach(category => {
+                    allCheats = allCheats.concat(category);
+                });
+            } else {
+                allCheats = cheats[currentCategory] || [];
+            }
+
+            allCheats = allCheats.filter(cheat => 
+                cheat.name.toLowerCase().includes(searchTerm) || 
+                cheat.desc.toLowerCase().includes(searchTerm)
+            );
+
+            const container = document.getElementById('cheatsContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            if (allCheats.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            container.innerHTML = allCheats.map(cheat => `
+                <div class="cheat-card">
+                    <div class="cheat-name">${cheat.name}</div>
+                    <div class="cheat-description">${cheat.desc}</div>
+                    <div class="cheat-meta">
+                        <span class="risk-badge ${getRiskBadgeClass(riskLevels[cheat.name])}">
+                            ${getRiskLabel(riskLevels[cheat.name])}
+                        </span>
+                        <span class="power-rating">⭐⭐⭐⭐</span>
+                    </div>
+                    <div class="cheat-actions">
+                        <button class="btn btn-copy" onclick="copyCheats('${cheat.file}', '${cheat.name}')">📋 Copy</button>
+                        <button class="btn btn-view" onclick="viewCode('${cheat.file}', '${cheat.name}')">👁️ View</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function copyCheats(file, name) {
+            try {
+                const url = `https://raw.githubusercontent.com/AkiUse306/nitro_type-cheats/main/cheats/${file}.js`;
+                const response = await fetch(url);
+                const code = await response.text();
+                
+                await navigator.clipboard.writeText(code);
+                showToast(`✅ ${name} copied to clipboard!`);
+            } catch (error) {
+                showToast(`❌ Error copying ${name}`);
+            }
+        }
+
+        async function viewCode(file, name) {
+            try {
+                const url = `https://raw.githubusercontent.com/akinofcam/nitro_type-cheats/main/cheats/${file}.js`;
+                const response = await fetch(url);
+                const code = await response.text();
+                
+                currentCode = code;
+                document.getElementById('modalTitle').textContent = name;
+                document.getElementById('codeBlock').textContent = code;
+                document.getElementById('codeModal').classList.add('active');
+            } catch (error) {
+                showToast(`❌ Error loading ${name}`);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('codeModal').classList.remove('active');
+        }
+
+        async function copyFromModal() {
+            try {
+                await navigator.clipboard.writeText(currentCode);
+                showToast('✅ Code copied to clipboard!');
+            } catch (error) {
+                showToast('❌ Error copying code');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Initialize
+        renderCheats();
+
+        // Close modal on outside click
+        document.getElementById('codeModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>
